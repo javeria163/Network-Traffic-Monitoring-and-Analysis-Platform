@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Packet Analyzer</title>
+
+<style>
+
+/* =========================
+   BASE THEME (UNCHANGED STYLE)
+========================= */
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #1e1e1e;
+  color: #ddd;
+}
+
+/* =========================
+   HEADER (IMPROVED)
+========================= */
+.header {
+  background: linear-gradient(90deg, #1f1f1f, #2b2b2b, #1f1f1f);
+  padding: 16px;
+  border-bottom: 1px solid #333;
+  text-align: center;
+}
+
+/* CENTER TITLE */
+.header-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #00ff9d;
+  letter-spacing: 1px;
+}
+
+/* small subtitle feel */
+.header-sub {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 4px;
+}
+
+/* =========================
+   CONTROL BAR
+========================= */
+.controls {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: #252525;
+  border-bottom: 1px solid #333;
+  align-items: center;
+}
+
+button {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+#startBtn { background: #00c853; color: black; }
+#stopBtn  { background: #d50000; color: white; }
+
+#status {
+  margin-left: auto;
+  font-weight: bold;
+  color: #00ff9d;
+}
+
+/* =========================
+   FILTERS (SLIGHT UPGRADE)
+========================= */
+.filters {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: #202020;
+  border-bottom: 1px solid #333;
+}
+
+input, select {
+  background: #2c2c2c;
+  border: 1px solid #444;
+  color: #ddd;
+  padding: 6px;
+  border-radius: 5px;
+  outline: none;
+}
+
+input:focus, select:focus {
+  border-color: #00ff9d;
+}
+
+/* =========================
+   STATS
+========================= */
+.stats {
+  display: flex;
+  gap: 15px;
+  padding: 10px;
+  background: #1a1a1a;
+  border-bottom: 1px solid #333;
+}
+
+.stat-box {
+  background: #2a2a2a;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 80px;
+}
+
+.stat-box span {
+  display: block;
+  font-size: 18px;
+  color: #00e5ff;
+  font-weight: bold;
+}
+
+/* =========================
+   TABLE
+========================= */
+.table-container {
+  height: calc(100vh - 240px);
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  background: #2b2b2b;
+  color: #00ff9d;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+td {
+  padding: 7px;
+  border-bottom: 1px solid #2c2c2c;
+}
+
+tr:hover {
+  background: #333;
+}
+
+/* Protocol colors */
+.TCP { color: #00b0ff; }
+.UDP { color: #00e676; }
+.ICMP { color: #ff9100; }
+
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER (UPDATED) ================= -->
+<div class="header">
+  <div class="header-title">
+    Network Traffic Monitoring and Analysis Platform
+  </div>
+  <div class="header-sub">
+    Lightweight Wireshark-style Packet Analyzer
+  </div>
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <button id="startBtn" onclick="startMonitor()">Start</button>
+  <button id="stopBtn" onclick="stopMonitor()">Stop</button>
+  <div id="status">● Idle</div>
+</div>
+
+<!-- Filters -->
+<div class="filters">
+  <select id="f-proto">
+    <option value="">All Protocols</option>
+    <option>TCP</option>
+    <option>UDP</option>
+    <option>ICMP</option>
+  </select>
+
+  <input id="f-src" placeholder="Source IP">
+  <input id="f-dst" placeholder="Destination IP">
+
+  <button onclick="fetchData()">Apply</button>
+  <button onclick="clearFilters()" style="background:#555; color:#fff;">Clear Filter</button>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat-box">Total<span id="s-total">0</span></div>
+  <div class="stat-box">TCP<span id="s-tcp">0</span></div>
+  <div class="stat-box">UDP<span id="s-udp">0</span></div>
+  <div class="stat-box">ICMP<span id="s-icmp">0</span></div>
+  <div class="stat-box">Avg Size<span id="s-avg">0</span></div>
+</div>
+
+<!-- Table -->
+<div class="table-container">
+<table>
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Source</th>
+      <th>Destination</th>
+      <th>Protocol</th>
+      <th>Src Port</th>
+      <th>Dst Port</th>
+      <th>Service</th>
+      <th>Size</th>
+    </tr>
+  </thead>
+  <tbody id="dataTable"></tbody>
+</table>
+</div>
+
+<script>
+let interval = null;
+
+function startMonitor() {
+  fetch('/start', {method:'POST'}).then(() => {
+    document.getElementById('status').innerText = "● Capturing...";
+    document.getElementById('status').style.color = "#00ff9d";
+
+    interval = setInterval(fetchData, 2000);
+    fetchData();
+  });
+}
+
+function stopMonitor() {
+  fetch('/stop', {method:'POST'}).then(() => {
+    document.getElementById('status').innerText = "● Stopped";
+    document.getElementById('status').style.color = "#ff5252";
+
+    clearInterval(interval);
+  });
+}
+
+function clearFilters() {
+  document.getElementById('f-proto').value = '';
+  document.getElementById('f-src').value = '';
+  document.getElementById('f-dst').value = '';
+  fetchData();
+}
+
+function fetchData() {
+  const p = document.getElementById('f-proto').value;
+  const s = document.getElementById('f-src').value;
+  const d = document.getElementById('f-dst').value;
+
+  fetch(`/data?protocol=${p}&src_ip=${s}&dst_ip=${d}`)
+    .then(r => r.json())
+    .then(data => {
+
+      const stats = data.stats;
+
+      document.getElementById('s-total').innerText = stats.total_packets;
+      document.getElementById('s-tcp').innerText = stats.tcp_count;
+      document.getElementById('s-udp').innerText = stats.udp_count;
+      document.getElementById('s-icmp').innerText = stats.icmp_count;
+      document.getElementById('s-avg').innerText = stats.avg_size;
+
+      const table = document.getElementById('dataTable');
+
+      const rows = data.packets.slice(-100).reverse().map(p => `
+        <tr>
+          <td>${p.time}</td>
+          <td>${p.src_ip}</td>
+          <td>${p.dst_ip}</td>
+          <td class="${p.protocol}">${p.protocol}</td>
+          <td>${p.src_port}</td>
+          <td>${p.dst_port}</td>
+          <td>${p.service}</td>
+          <td>${p.packet_size}</td>
+        </tr>
+      `).join('');
+
+      table.innerHTML = rows;
+    });
+}
+</script>
+
+</body>
+</html>
