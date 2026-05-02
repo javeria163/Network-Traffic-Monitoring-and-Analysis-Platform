@@ -1,4 +1,4 @@
-# 🌐 Network Traffic Monitoring & Analysis Platform
+#  Network Traffic Monitoring & Analysis Platform
 
 > A lightweight, browser-based, Wireshark-style real-time packet analyzer built with Python and Flask.
 
@@ -9,7 +9,7 @@
 
 ---
 
-## 📌 Overview
+##  Overview
 
 This project captures live network packets directly from the host machine's active interface, classifies them by protocol (TCP / UDP / ICMP), persists them to a CSV log, and presents a real-time filterable dashboard — all accessible from any web browser without client-side installation.
 
@@ -17,19 +17,19 @@ Built as a Computer Networks course project (BCSF24A041 — Javeria Javaid).
 
 ---
 
-## ✨ Features
+##  Features
 
-- 🔴 **Live packet capture** using Scapy — start and stop from the browser
-- 📊 **Real-time statistics** — total packets, TCP/UDP/ICMP counts, average packet size
-- 🔍 **Protocol & IP filtering** — filter by TCP/UDP/ICMP and source/destination IP
-- 🗂️ **Persistent CSV logging** — `traffic_data.csv` survives across sessions
-- 🏷️ **Service name mapping** — port numbers auto-resolved to HTTP, HTTPS, DNS, SSH, FTP, SMTP, MySQL
-- 🌑 **Dark-themed dashboard** — colour-coded protocol rows, auto-refreshes every 2 seconds
-- 🔁 **Non-blocking capture** — background thread keeps the web server responsive
+-  **Live packet capture** using Scapy — start and stop from the browser
+-  **Real-time statistics** — total packets, TCP/UDP/ICMP counts, average packet size
+-  **Protocol & IP filtering** — filter by TCP/UDP/ICMP and source/destination IP
+-  **Persistent CSV logging** — `traffic_data.csv` survives across sessions
+-  **Service name mapping** — port numbers auto-resolved to HTTP, HTTPS, DNS, SSH, FTP, SMTP, MySQL
+-  **Dark-themed dashboard** — colour-coded protocol rows, auto-refreshes every 2 seconds
+-  **Non-blocking capture** — background thread keeps the web server responsive
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology | Purpose |
 |---|---|---|
@@ -42,7 +42,7 @@ Built as a Computer Networks course project (BCSF24A041 — Javeria Javaid).
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 network-traffic-analyzer/
@@ -56,7 +56,7 @@ network-traffic-analyzer/
 
 ---
 
-## 📋 Dataset Description
+##  Dataset Description
 
 The tool generates `traffic_data.csv` automatically during capture. Each row represents one captured IP packet.
 
@@ -74,7 +74,7 @@ The tool generates `traffic_data.csv` automatically during capture. Each row rep
 
 ---
 
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 
@@ -117,7 +117,7 @@ Navigate to `http://127.0.0.1:5000` in your browser.
 
 ---
 
-## 🚀 Usage
+##  Usage
 
 1. Open the dashboard at `http://127.0.0.1:5000`
 2. Click **Start** — packet capture begins immediately in the background
@@ -128,7 +128,7 @@ Navigate to `http://127.0.0.1:5000` in your browser.
 
 ---
 
-## 🔌 API Endpoints
+##  API Endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -144,7 +144,7 @@ GET /data?protocol=TCP&src_ip=192.168.0
 
 ---
 
-## 📊 Sample Results
+##  Sample Results
 
 From a real capture session (2,285 packets):
 
@@ -160,7 +160,7 @@ From a real capture session (2,285 packets):
 
 ---
 
-## 🔭 Scope & Limitations
+##  Scope & Limitations
 
 **In scope:** Single-host monitoring, TCP/UDP/ICMP capture, CSV logging, web dashboard, port-to-service mapping.
 
@@ -168,7 +168,7 @@ From a real capture session (2,285 packets):
 
 ---
 
-## 🔮 Future Enhancements
+##  Future Enhancements
 
 - GeoIP resolution to map IP addresses to countries/cities on a live map
 - Anomaly detection and threshold-based alerting
@@ -178,7 +178,7 @@ From a real capture session (2,285 packets):
 
 ---
 
-## 👩‍💻 Author
+##  Author
 
 **Javeria Javaid**  
 Roll No: BCSF24A041 | CS Self-Support  
@@ -186,6 +186,6 @@ Computer Networks — April 2026
 
 ---
 
-## 📄 License
+##  License
 
 This project is for educational purposes. Feel free to fork and extend.
